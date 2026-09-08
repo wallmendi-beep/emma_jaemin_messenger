@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+data/*
+!data/.gitkeep
+backups/
+*.db
+*.db-shm
+*.db-wal
+rendered-dom.html
+*.log
+.env
+.DS_Store
+Thumbs.db
