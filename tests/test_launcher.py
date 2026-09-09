@@ -13,16 +13,15 @@ class LauncherTest(unittest.TestCase):
         self.assertIn("http://127.0.0.1:8765/api/health", text)
         self.assertIn('start "" "http://127.0.0.1:8765"', text)
 
-    def test_runtime_builds_server_and_bridge_on_the_same_database(self):
+    def test_runtime_is_server_only_no_bridge(self):
         with tempfile.TemporaryDirectory() as tmp:
             db = Path(tmp) / "messages.db"
-            server, bridge = build_runtime(db, port=0)
+            runtime = build_runtime(db, port=0)
             try:
-                self.assertGreater(server.server_port, 0)
-                self.assertEqual(db, bridge.store.path)
-                self.assertEqual(6, bridge.max_exchanges)
+                self.assertFalse(isinstance(runtime, tuple), 'launcher still creates a bridge')
+                self.assertGreater(runtime.server_port, 0)
             finally:
-                server.server_close()
+                (runtime[0] if isinstance(runtime, tuple) else runtime).server_close()
 
 
 if __name__ == "__main__":

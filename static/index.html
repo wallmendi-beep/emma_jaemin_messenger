@@ -1,428 +1,64 @@
 <!doctype html>
 <html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Emma · Jaemin · Jinah</title>
-  <style>
-    :root {
-      color-scheme: light;
-      --paper: #f4f0e8;
-      --panel: #fffdf8;
-      --ink: #20221f;
-      --muted: #5f635d;
-      --line: #d9d4ca;
-      --emma: #355c7d;
-      --jaemin: #7d4e57;
-      --user: #37624d;
-      --warning: #a14a2a;
-      --warning-bg: #fff0e7;
-      --shadow: 0 14px 40px rgba(44, 39, 31, .09);
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: var(--paper);
-      color: var(--ink);
-      font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
-    }
-    button, textarea, select { font: inherit; }
-    button, select { min-height: 44px; }
-    .shell { max-width: 1360px; margin: 0 auto; padding: 28px 20px 36px; }
-    header { display: flex; justify-content: space-between; gap: 18px; align-items: end; margin-bottom: 18px; }
-    .eyebrow { color: var(--muted); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
-    h1 { margin: 4px 0 0; font-family: Georgia, "Batang", serif; font-size: clamp(28px, 4vw, 44px); font-weight: 500; }
-    .privacy { color: var(--user); font-size: 13px; border: 1px solid #b8cbbf; background: #edf5ef; padding: 9px 12px; border-radius: 999px; white-space: nowrap; }
-    .participants { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
-    .person { background: rgba(255,253,248,.72); border: 1px solid var(--line); padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
-    .person:first-child { border-radius: 14px 0 0 14px; }
-    .person:last-child { border-radius: 0 14px 14px 0; }
-    .initial { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; color: white; font-family: Georgia, serif; }
-    [data-participant="user"] .initial { background: var(--user); }
-    [data-participant="emma"] .initial { background: var(--emma); }
-    [data-participant="jaemin"] .initial { background: var(--jaemin); }
-    .person strong, .person small { display: block; }
-    .person small { color: var(--muted); margin-top: 2px; }
-    #decision-banner { display: none; border: 1px solid #e2a786; background: var(--warning-bg); color: #6f2f1b; padding: 14px 18px; margin-bottom: 12px; border-radius: 12px; }
-    #decision-banner.visible { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .workspace { display: grid; grid-template-columns: 240px minmax(0, 1fr) 290px; min-height: 620px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); overflow: hidden; }
-    .project-nav { border-right: 1px solid var(--line); padding: 16px 12px; background: #f1ede4; }
-    .project-nav-head { display: flex; align-items: center; justify-content: space-between; padding: 0 4px 12px; }
-    .project-nav-head strong { font-size: 13px; }
-    #new-project { min-height: 36px; padding: 0 10px; background: transparent; color: var(--ink); border: 1px solid var(--line); }
-    #project-list { display: grid; gap: 5px; }
-    .project-button { width: 100%; min-height: 52px; padding: 9px 10px; text-align: left; color: var(--ink); background: transparent; border: 1px solid transparent; }
-    .project-button:hover { background: #e8e2d7; }
-    .project-button.active { background: var(--panel); border-color: var(--line); box-shadow: 0 3px 10px rgba(44,39,31,.06); }
-    .project-button strong, .project-button small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .project-button small { color: var(--muted); margin-top: 3px; }
-    .conversation { min-width: 0; display: flex; flex-direction: column; }
-    .conversation-head { padding: 17px 20px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
-    .conversation-head strong { font-size: 15px; }
-    #connection { color: var(--muted); font-size: 12px; }
-    #messages { flex: 1; overflow-y: auto; padding: 20px; background: #fbfaf6; }
-    .empty { color: var(--muted); text-align: center; padding: 80px 20px; }
-    .message { max-width: 78%; margin: 0 0 15px; }
-    .message.user { margin-left: auto; }
-    .meta { color: var(--muted); font-size: 11px; margin-bottom: 5px; display: flex; gap: 7px; }
-    .message.user .meta { justify-content: flex-end; }
-    .bubble { border: 1px solid var(--line); background: white; padding: 12px 14px; border-radius: 4px 14px 14px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
-    .message.user .bubble { background: #edf5ef; border-color: #cadbcf; border-radius: 14px 4px 14px 14px; }
-    .message.emma .bubble { border-left: 3px solid var(--emma); }
-    .message.jaemin .bubble { border-left: 3px solid var(--jaemin); }
-    .tag { font-size: 10px; letter-spacing: .04em; text-transform: uppercase; }
-    .compose { padding: 14px; border-top: 1px solid var(--line); background: var(--panel); }
-    .compose-row { display: grid; grid-template-columns: 120px 1fr auto; gap: 8px; align-items: end; }
-    textarea { width: 100%; min-height: 76px; max-height: 180px; resize: vertical; border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; background: white; color: var(--ink); }
-    select { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 0 10px; background: white; }
-    button { border: 0; border-radius: 10px; background: var(--ink); color: white; padding: 0 18px; cursor: pointer; }
-    button:hover { background: #3b3d39; }
-    button:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid #9ab5c9; outline-offset: 2px; }
-    button:disabled { opacity: .55; cursor: wait; }
-    aside { border-left: 1px solid var(--line); padding: 20px; background: #f7f4ed; }
-    aside h2 { font: 500 20px Georgia, "Batang", serif; margin: 0 0 18px; }
-    .rule { padding: 12px 0; border-top: 1px solid var(--line); }
-    .rule:first-of-type { border-top: 0; }
-    .rule strong { font-size: 13px; }
-    .rule p { color: var(--muted); font-size: 12px; line-height: 1.55; margin: 5px 0 0; }
-    .rules-section { margin: 16px 0; }
-    .rules-section h3 { margin: 0 0 8px; font-size: 12px; color: var(--muted); letter-spacing: .04em; }
-    .rule-item { border-top: 1px solid var(--line); padding: 9px 0; font-size: 12px; line-height: 1.5; }
-    .rule-item.proposed { color: #70402f; background: var(--warning-bg); padding: 9px; border: 1px solid #e2b9a2; border-radius: 8px; margin: 7px 0; }
-    .rule-item button { min-height: 32px; margin-top: 7px; padding: 0 11px; font-size: 11px; }
-    #rule-form textarea { min-height: 70px; font-size: 12px; }
-    #rule-form button { width: 100%; margin-top: 7px; min-height: 38px; }
-    .rule-help { color: var(--muted); font-size: 11px; line-height: 1.45; }
-    #notify { width: 100%; background: transparent; color: var(--ink); border: 1px solid var(--line); margin-top: 18px; }
-    dialog { width: min(520px, calc(100vw - 32px)); border: 1px solid var(--line); border-radius: 16px; padding: 0; color: var(--ink); background: var(--panel); box-shadow: var(--shadow); }
-    dialog::backdrop { background: rgba(30,31,28,.42); }
-    .project-form { padding: 22px; }
-    .project-form h2 { margin: 0 0 4px; font: 500 25px Georgia, "Batang", serif; }
-    .project-form > p { margin: 0 0 18px; color: var(--muted); font-size: 13px; }
-    .field { display: grid; gap: 6px; margin: 12px 0; }
-    .field label { font-size: 12px; font-weight: 700; }
-    .field input { min-height: 44px; border: 1px solid var(--line); border-radius: 10px; padding: 0 11px; }
-    .form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
-    #cancel-project { background: transparent; color: var(--ink); border: 1px solid var(--line); }
-    @media (max-width: 760px) {
-      .shell { padding: 18px 12px; }
-      header { align-items: start; flex-direction: column; }
-      .participants { grid-template-columns: 1fr; }
-      .person, .person:first-child, .person:last-child { border-radius: 10px; }
-      .workspace { grid-template-columns: 1fr; }
-      .project-nav { border-right: 0; border-bottom: 1px solid var(--line); }
-      #project-list { display: flex; overflow-x: auto; }
-      .project-button { min-width: 180px; }
-      aside { display: none; }
-      .compose-row { grid-template-columns: 1fr auto; }
-      .compose-row select { grid-column: 1 / -1; }
-      .message { max-width: 92%; }
-    }
-    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
-  </style>
-</head>
-<body>
-  <main class="shell">
-    <header>
-      <div><div class="eyebrow">Private collaboration room</div><h1>엠마 · 재민이 · 오빠</h1></div>
-      <div class="privacy">127.0.0.1 · 외부 전송 없음</div>
-    </header>
-
-    <section class="participants" aria-label="참여자">
-      <div class="person" data-participant="user"><span class="initial">오</span><div><strong>오빠</strong><small>최종 판단·승인</small></div></div>
-      <div class="person" data-participant="emma"><span class="initial">엠</span><div><strong>엠마</strong><small>총괄·독립 검수</small></div></div>
-      <div class="person" data-participant="jaemin"><span class="initial">재</span><div><strong>재민이</strong><small>협의·구현 제안</small></div></div>
-    </section>
-
-    <section id="decision-banner" role="alert">
-      <div><strong>오빠의 판단을 기다리고 있어요.</strong><br><small>답변을 보내면 엠마와 재민이의 협의가 다시 시작됩니다.</small></div>
-      <span>자동협의 일시정지</span>
-    </section>
-
-    <section class="workspace">
-      <nav class="project-nav" aria-label="프로젝트">
-        <div class="project-nav-head"><strong>프로젝트</strong><button id="new-project" type="button">+ 새로 만들기</button></div>
-        <div id="project-list"></div>
-      </nav>
-      <div class="conversation">
-        <div class="conversation-head"><strong id="room-title">협업 대화</strong><span id="connection">연결 확인 중</span></div>
-        <div id="messages" aria-live="polite"><div class="empty">첫 작업을 엠마에게 보내세요.</div></div>
-        <form class="compose" id="compose">
-          <div class="compose-row">
-            <select id="recipient" aria-label="받는 사람"><option value="emma">엠마에게</option><option value="jaemin">재민이에게</option></select>
-            <textarea id="body" required maxlength="60000" placeholder="작업이나 답변을 입력하세요. Ctrl+Enter로 전송"></textarea>
-            <button id="send" type="submit">보내기</button>
-          </div>
-        </form>
-      </div>
-      <aside>
-        <h2>협업 원칙</h2>
-        <section class="rules-section"><h3>공통 안전원칙 · 보호됨</h3><div id="global-rules"></div></section>
-        <section class="rules-section"><h3>현재 프로젝트</h3><div id="project-rules"></div></section>
-        <form id="rule-form">
-          <textarea id="rule-text" required maxlength="2000" placeholder="프로젝트 협업 원칙을 직접 추가하세요."></textarea>
-          <button type="submit">원칙 추가</button>
-        </form>
-        <p class="rule-help">대화창에서 “이 내용을 협업 원칙으로 제안해 줘”라고 요청할 수도 있습니다. AI의 제안은 오빠가 승인해야 적용됩니다.</p>
-        <button id="notify" type="button">판단 요청 알림 켜기</button>
-      </aside>
-    </section>
-  </main>
-
-  <dialog id="project-dialog">
-    <form class="project-form" id="project-form">
-      <h2>새 프로젝트</h2>
-      <p>각 프로젝트의 대화와 연결정보는 별도로 보존됩니다.</p>
-      <div class="field"><label for="project-name">프로젝트 이름 *</label><input id="project-name" required maxlength="120" autofocus></div>
-      <div class="field"><label for="project-workspace">작업 폴더</label><input id="project-workspace" placeholder="C:\\Work\\Project"></div>
-      <div class="field"><label for="project-hermes">Hermes 세션 ID</label><input id="project-hermes" placeholder="20260908_..."></div>
-      <div class="field"><label for="project-jaemin">재민이 대화 ID</label><input id="project-jaemin" placeholder="선택사항"></div>
-      <div class="form-actions"><button id="cancel-project" type="button">취소</button><button type="submit">프로젝트 생성</button></div>
-    </form>
-  </dialog>
-
-  <script>
-    const messagesEl = document.querySelector('#messages');
-    const banner = document.querySelector('#decision-banner');
-    const form = document.querySelector('#compose');
-    const bodyEl = document.querySelector('#body');
-    const recipientEl = document.querySelector('#recipient');
-    const sendEl = document.querySelector('#send');
-    const connectionEl = document.querySelector('#connection');
-    const projectListEl = document.querySelector('#project-list');
-    const roomTitleEl = document.querySelector('#room-title');
-    const projectDialog = document.querySelector('#project-dialog');
-    const projectForm = document.querySelector('#project-form');
-    const globalRulesEl = document.querySelector('#global-rules');
-    const projectRulesEl = document.querySelector('#project-rules');
-    const ruleForm = document.querySelector('#rule-form');
-    const ruleTextEl = document.querySelector('#rule-text');
-    let messages = [];
-    let projects = [];
-    let globalRules = [];
-    let projectRules = [];
-    let activeProjectId = Number(localStorage.getItem('activeProjectId')) || 1;
-    let lastDecisionId = 0;
-    let pendingDecision = null;
-
-    const names = { user: '오빠', emma: '엠마', jaemin: '재민이' };
-    const typeNames = {
-      TASK: '작업', QUESTION: '질문', REPLY: '답변', INFO: '알림',
-      READY_FOR_REVIEW: '검수 요청', CHANGES_REQUESTED: '보완 요청',
-      RULE_PROPOSAL: '원칙 제안', USER_DECISION_REQUIRED: '판단 요청', STOP: '종료'
-    };
-
-    function renderProjects() {
-      projectListEl.replaceChildren();
-      for (const project of projects) {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = `project-button${project.id === activeProjectId ? ' active' : ''}`;
-        const name = document.createElement('strong');
-        name.textContent = project.name;
-        const detail = document.createElement('small');
-        detail.textContent = `${project.message_count}개 메시지${project.paused ? ' · 판단 대기' : ''}`;
-        button.append(name, detail);
-        button.addEventListener('click', () => {
-          activeProjectId = project.id;
-          localStorage.setItem('activeProjectId', String(project.id));
-          pendingDecision = null;
-          renderProjects();
-          refresh();
-        });
-        projectListEl.append(button);
-      }
-      const active = projects.find(project => project.id === activeProjectId);
-      roomTitleEl.textContent = active ? active.name : '협업 대화';
-    }
-
-    async function loadProjects() {
-      const response = await fetch('/api/projects', {cache: 'no-store'});
-      const data = await response.json();
-      projects = data.projects;
-      if (!projects.some(project => project.id === activeProjectId)) {
-        activeProjectId = projects[0]?.id || 1;
-      }
-      renderProjects();
-    }
-
-    function renderRules() {
-      globalRulesEl.replaceChildren();
-      for (const rule of globalRules) {
-        const item = document.createElement('div');
-        item.className = 'rule-item';
-        item.textContent = rule.text;
-        globalRulesEl.append(item);
-      }
-      projectRulesEl.replaceChildren();
-      if (!projectRules.length) {
-        const empty = document.createElement('div');
-        empty.className = 'rule-item';
-        empty.textContent = '등록된 프로젝트 원칙이 없습니다.';
-        projectRulesEl.append(empty);
-      }
-      for (const rule of projectRules) {
-        const item = document.createElement('div');
-        item.className = `rule-item${rule.status === 'proposed' ? ' proposed' : ''}`;
-        const text = document.createElement('div');
-        text.textContent = rule.text;
-        item.append(text);
-        if (rule.status === 'proposed') {
-          const approve = document.createElement('button');
-          approve.type = 'button';
-          approve.textContent = '오빠 승인 · 적용';
-          approve.addEventListener('click', async () => {
-            const response = await fetch(`/api/rules/${rule.id}/approve`, {
-              method: 'POST', headers: {'Content-Type': 'application/json'}, body: '{}'
-            });
-            if (!response.ok) throw new Error(await response.text());
-            await loadRules();
-          });
-          item.append(approve);
-        }
-        projectRulesEl.append(item);
-      }
-    }
-
-    async function loadRules() {
-      const response = await fetch(`/api/rules?project_id=${activeProjectId}`, {cache: 'no-store'});
-      const data = await response.json();
-      globalRules = data.global_rules;
-      projectRules = data.project_rules;
-      renderRules();
-    }
-
-    function render() {
-      messagesEl.replaceChildren();
-      if (!messages.length) {
-        const empty = document.createElement('div');
-        empty.className = 'empty';
-        empty.textContent = '첫 작업을 엠마에게 보내세요.';
-        messagesEl.append(empty);
-        return;
-      }
-      for (const message of messages) {
-        const item = document.createElement('article');
-        item.className = `message ${message.sender}`;
-        const meta = document.createElement('div');
-        meta.className = 'meta';
-        const who = document.createElement('strong');
-        who.textContent = names[message.sender] || message.sender;
-        const tag = document.createElement('span');
-        tag.className = 'tag';
-        tag.textContent = typeNames[message.type] || message.type;
-        const time = document.createElement('time');
-        time.textContent = new Date(message.created_at * 1000).toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'});
-        meta.append(who, tag, time);
-        const bubble = document.createElement('div');
-        bubble.className = 'bubble';
-        bubble.textContent = message.body;
-        item.append(meta, bubble);
-        messagesEl.append(item);
-      }
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-    }
-
-    async function refresh() {
-      try {
-        await loadProjects();
-        await loadRules();
-        const response = await fetch(`/api/messages?project_id=${activeProjectId}&after=0`, {cache: 'no-store'});
-        const data = await response.json();
-        messages = data.messages;
-        pendingDecision = [...messages].reverse().find(m => m.type === 'USER_DECISION_REQUIRED' && m.status === 'pending') || null;
-        banner.classList.toggle('visible', Boolean(data.paused));
-        if (pendingDecision) {
-          recipientEl.value = pendingDecision.sender;
-          bodyEl.placeholder = '판단 요청에 답변하세요. 답변 후 자동협의가 재개됩니다.';
-          if (pendingDecision.id > lastDecisionId && Notification.permission === 'granted') {
-            new Notification('엠마·재민이 협업', {body: pendingDecision.body});
-            lastDecisionId = pendingDecision.id;
-          }
-        } else {
-          bodyEl.placeholder = '작업이나 답변을 입력하세요. Ctrl+Enter로 전송';
-        }
-        connectionEl.textContent = data.paused ? '오빠 답변 대기' : '로컬 서버 연결됨';
-        render();
-      } catch (error) {
-        connectionEl.textContent = '연결 끊김';
-      }
-    }
-
-    form.addEventListener('submit', async event => {
-      event.preventDefault();
-      const body = bodyEl.value.trim();
-      if (!body) return;
-      sendEl.disabled = true;
-      const payload = {
-        project_id: activeProjectId,
-        sender: 'user', recipient: recipientEl.value,
-        type: pendingDecision ? 'REPLY' : 'TASK', body,
-        reply_to: pendingDecision ? pendingDecision.id : null
-      };
-      try {
-        const response = await fetch('/api/messages', {
-          method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)
-        });
-        if (!response.ok) throw new Error(await response.text());
-        bodyEl.value = '';
-        pendingDecision = null;
-        await refresh();
-      } finally { sendEl.disabled = false; bodyEl.focus(); }
-    });
-
-    bodyEl.addEventListener('keydown', event => {
-      if (event.ctrlKey && event.key === 'Enter') form.requestSubmit();
-    });
-    document.querySelector('#notify').addEventListener('click', async () => {
-      if ('Notification' in window) await Notification.requestPermission();
-    });
-    document.querySelector('#new-project').addEventListener('click', () => projectDialog.showModal());
-    document.querySelector('#cancel-project').addEventListener('click', () => projectDialog.close());
-    projectForm.addEventListener('submit', async event => {
-      event.preventDefault();
-      const payload = {
-        name: document.querySelector('#project-name').value.trim(),
-        workspace: document.querySelector('#project-workspace').value.trim(),
-        hermes_session_id: document.querySelector('#project-hermes').value.trim(),
-        jaemin_conversation_id: document.querySelector('#project-jaemin').value.trim()
-      };
-      const response = await fetch('/api/projects', {
-        method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)
-      });
-      if (!response.ok) {
-        const data = await response.json();
-        alert(data.error || '프로젝트를 만들지 못했습니다.');
-        return;
-      }
-      const project = await response.json();
-      activeProjectId = project.id;
-      localStorage.setItem('activeProjectId', String(project.id));
-      projectForm.reset();
-      projectDialog.close();
-      await refresh();
-      bodyEl.focus();
-    });
-    ruleForm.addEventListener('submit', async event => {
-      event.preventDefault();
-      const text = ruleTextEl.value.trim();
-      if (!text) return;
-      const response = await fetch('/api/rules', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({project_id: activeProjectId, text})
-      });
-      if (!response.ok) {
-        const data = await response.json();
-        alert(data.error || '원칙을 추가하지 못했습니다.');
-        return;
-      }
-      ruleTextEl.value = '';
-      await loadRules();
-    });
-    refresh();
-    setInterval(refresh, 2000);
-  </script>
-</body>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>엠마 · 재민이 메모 우편함</title>
+<style>
+body{font:16px/1.6 'Malgun Gothic',sans-serif;max-width:1080px;margin:30px auto;padding:0 18px;background:#f4f1ea;color:#222}section,details{background:#fffdf8;padding:20px;margin:16px 0;border:1px solid #d5d0c6;border-radius:12px}h1{font-size:28px}label{display:block;margin:10px 0}input,select,button{font:inherit;padding:8px;border:1px solid #aaa;border-radius:5px}input{box-sizing:border-box;width:100%}button{cursor:pointer;background:#23485e;color:white}button:disabled{opacity:.5}article{border-top:1px solid #ddd;padding:12px 0;white-space:pre-wrap;overflow-wrap:anywhere}.error,#error{color:#a12727}.completed{color:#1d6240}small{color:#555}#connection{font-weight:bold}summary{cursor:pointer}
+</style>
+<h1>엠마 · 재민이 메모 우편함</h1>
+<p>공유 MD를 쓴 뒤 “이 버전을 읽어 주세요” 알림을 남깁니다. <strong>기존 작업 세션이 polling adapter를 연동해야 수신합니다.</strong> 새 AI를 실행하거나 열린 터미널에 주입하지 않습니다.</p>
+<small>이 서버는 로컬 메타데이터 전달만 담당합니다. 기존 AI 작업자가 내용을 처리하면 AI 제공자 서버로 전송될 수 있습니다.</small>
+<p id="connection" role="status">연결 확인 중</p><p id="error" role="alert"></p>
+<section>
+<label>프로젝트 <select id="project"></select></label>
+<details><summary>프로젝트 추가</summary><form id="project-form">
+<label>이름<input id="project-name" required maxlength="120"></label>
+<label>공유 작업 폴더 (절대 경로)<input id="workspace" required></label>
+<button>추가</button></form></details>
+<form id="memo-form">
+<label>받는 작업자<select id="recipient"><option value="emma">엠마 (Hermes)</option><option value="jaemin">재민이 (Antigravity)</option><option value="user">사용자</option></select></label>
+<label>메모 경로 (프로젝트 내부 .md)<input id="memo-path" required placeholder="memos/review-v1.md"></label>
+<label>해당 파일의 SHA-256 (소문자 64자리)<input id="version-hash" required pattern="[0-9a-f]{64}" minlength="64" maxlength="64"></label>
+<button id="send">메모 읽기 알림 등록</button>
+</form>
+<small>메모 파일을 직접 수정하거나 업로드하지 않습니다. 같은 프로젝트·수신자·경로·해시의 재전송은 중복 등록되지 않습니다.</small>
+</section>
+<section><h2>전달 상태</h2><p>pending 대기 · claimed 수신권 확보 · read 읽음 확인 · completed 결과 연결 · error 오류</p><small>claimed/read 임대 만료는 다음 poll에서 재수신됩니다. 읽음은 작업자의 확인이며 AI 이해를 증명하지 않습니다.</small><div id="notifications" aria-live="polite"></div></section>
+<details><summary>이전 대화 — 읽기 전용 (기존 상태 그대로 보존)</summary><div id="history"></div><button id="more-history" type="button">다음 기록 보기</button></details>
+<details><summary>기존 협업 원칙 — 조회</summary><div id="rules"></div></details>
+<script>
+const $=s=>document.querySelector(s);
+let projectId=1, historyAfter=0, generation=0;
+async function api(path,body){
+ const r=await fetch(path,{cache:'no-store',...(body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})});
+ const data=await r.json(); if(!r.ok)throw Error(data.error||r.status);return data;
+}
+function fail(e){$('#error').textContent=e.message;}
+function article(parent,text,status=''){const el=document.createElement('article');el.className=status;el.textContent=text;parent.append(el);}
+async function loadProjects(selected){
+ const data=await api('/api/projects');$('#project').replaceChildren();
+ for(const p of data.projects){const o=document.createElement('option');o.value=p.id;o.textContent=p.name;$('#project').append(o);}
+ if(data.projects.some(p=>p.id==selected))$('#project').value=selected;
+ projectId=Number($('#project').value);generation++;historyAfter=0;$('#history').replaceChildren();$('#more-history').disabled=false;
+}
+async function refresh(){
+ const p=projectId,g=generation;let after=0,rows=[];
+ while(true){const data=await api(`/api/notifications?project_id=${p}&after=${after}&limit=500`);rows.push(...data.notifications);if(data.notifications.length<500)break;after=data.next_after;}
+ if(g!==generation)return;
+ $('#notifications').replaceChildren();
+ if(!rows.length)$('#notifications').textContent='알림 없음 — 기존 작업자가 연동되지 않아도 등록한 알림은 보존됩니다.';
+ for(const n of rows){const expired=n.lease_until&&n.lease_until*1000<Date.now()?' · 임대 만료, 재수신 대기':'';
+ article($('#notifications'),`#${n.id} → ${n.recipient} [${n.status}]${expired}\n${n.memo_path}\nSHA-256 ${n.version_hash}\n작업자 ${n.worker_id||'미수신'} · 시도 ${n.attempts}${n.error?'\n오류: '+n.error:''}${n.result_path?'\n결과: '+n.result_path+'\nSHA-256 '+n.result_hash:''}`,n.status);}
+ $('#connection').textContent='메모 서버 연결됨 · 작업 세션 연결 여부는 별도 확인 필요';
+}
+async function history(){const p=projectId,g=generation;const d=await api(`/api/messages?project_id=${p}&after=${historyAfter}`);if(g!==generation)return;for(const m of d.messages)article($('#history'),`#${m.id} ${m.sender} → ${m.recipient} [${m.type}/${m.status}]\n${m.body}`);historyAfter=d.next_after;$('#more-history').disabled=d.messages.length<200;}
+async function rules(){const g=generation;const d=await api(`/api/rules?project_id=${projectId}`);if(g!==generation)return;$('#rules').replaceChildren();for(const r of [...d.global_rules,...d.project_rules])article($('#rules'),`${r.status||'보호 원칙'}: ${r.text}`);}
+$('#project').onchange=async()=>{projectId=Number($('#project').value);generation++;historyAfter=0;$('#history').replaceChildren();$('#more-history').disabled=false;try{await Promise.all([refresh(),rules()]);}catch(e){fail(e);}};
+$('#more-history').onclick=()=>history().catch(fail);
+$('#memo-form').onsubmit=async e=>{e.preventDefault();$('#send').disabled=true;$('#error').textContent='';try{await api('/api/notifications',{project_id:projectId,recipient:$('#recipient').value,memo_path:$('#memo-path').value,version_hash:$('#version-hash').value});await refresh();}catch(e){fail(e);}finally{$('#send').disabled=false;}};
+$('#project-form').onsubmit=async e=>{e.preventDefault();try{const p=await api('/api/projects',{name:$('#project-name').value,workspace:$('#workspace').value});await loadProjects(p.id);await Promise.all([refresh(),rules()]);}catch(e){fail(e);}};
+async function poll(){try{await refresh();}catch(e){$('#connection').textContent='연결 실패';fail(e);}setTimeout(poll,2000);}
+(async()=>{try{await loadProjects();await rules();poll();}catch(e){fail(e);}})();
+</script>
 </html>
