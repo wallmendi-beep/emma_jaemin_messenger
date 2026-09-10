@@ -8,9 +8,10 @@ from pathlib import Path
 from contextlib import closing
 
 from .store import MessageStore
+from .tasks import TaskMixin
 
 
-class CourierStore(MessageStore):
+class CourierStore(TaskMixin, MessageStore):
     def __init__(self, path):
         path = Path(path)
         if path.exists():
@@ -21,6 +22,7 @@ class CourierStore(MessageStore):
                     with closing(sqlite3.connect(backup)) as target:
                         source.backup(target)
         super().__init__(path)
+        self.initialize_tasks()
         with self._connect() as con:
             # Replace only obsolete built-in rules; preserve user project rules/history.
             con.executemany('DELETE FROM global_rules WHERE text=?', [(text,) for text in (
@@ -48,6 +50,9 @@ class CourierStore(MessageStore):
                 BEGIN SELECT RAISE(ABORT,'legacy history is read-only'); END;
             ''')
 
+            if 'task_id' not in {r['name'] for r in con.execute('PRAGMA table_info(notifications)')}:
+                con.execute('ALTER TABLE notifications ADD COLUMN task_id TEXT')
+
     def get_project(self, project_id):
         # Do not validate int(value) then persist the original fractional ID.
         if type(project_id) is not int or not 1 <= project_id <= 9223372036854775807:
@@ -74,13 +79,19 @@ class CourierStore(MessageStore):
             raise ValueError('memo version mismatch')
         return str(path)
 
-    def notify(self, project_id, recipient, memo_path, version_hash):
+    def notify(self, project_id, recipient, memo_path, version_hash, task_id=None):
         if recipient not in {'emma', 'jaemin', 'user'}:
             raise ValueError('unsupported recipient')
+        if task_id is not None:
+            self.task_detail(project_id, task_id)
         path = self.memo(project_id, memo_path, version_hash)
         with self._connect() as con:
-            con.execute('INSERT OR IGNORE INTO notifications(project_id,recipient,memo_path,version_hash,created_at) VALUES(?,?,?,?,?)',
-                        (project_id, recipient, path, version_hash, time.time()))
+            con.execute('BEGIN IMMEDIATE')
+            old = con.execute('SELECT * FROM notifications WHERE project_id=? AND recipient=? AND memo_path=? AND version_hash=?', (project_id, recipient, path, version_hash)).fetchone()
+            if old and task_id is not None and old['task_id'] != task_id:
+                raise ValueError('duplicate notification belongs to a different task; use a new immutable memo version')
+            con.execute('INSERT OR IGNORE INTO notifications(project_id,recipient,memo_path,version_hash,created_at,task_id) VALUES(?,?,?,?,?,?)',
+                        (project_id, recipient, path, version_hash, time.time(), task_id))
             return dict(con.execute('SELECT * FROM notifications WHERE project_id=? AND recipient=? AND memo_path=? AND version_hash=?',
                                     (project_id, recipient, path, version_hash)).fetchone())
 

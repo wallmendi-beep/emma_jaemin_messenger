@@ -52,13 +52,17 @@ def _handler_factory(store, index_path):
             query = parse_qs(parsed.query)
             try:
                 if parsed.path == '/api/health':
-                    return self.send({'status': 'ok', 'mode': 'memo-courier-v1', 'agent_spawning': False})
+                    return self.send({'status': 'ok', 'mode': 'memo-courier-v1', 'agent_spawning': False, 'dashboard': 'tasks-v1', 'worker_connection': 'unverified', 'auto_wakeup': False})
                 if parsed.path in {'/', '/index.html'}:
                     return self.send(index_path.read_bytes(), html=True)
                 if parsed.path == '/api/projects':
                     return self.send({'projects': store.list_projects()})
                 project_id = int(query.get('project_id', ['1'])[0])
                 store.get_project(project_id)
+                if parsed.path == '/api/tasks':
+                    return self.send(store.task_board(project_id))
+                if parsed.path == '/api/tasks/detail':
+                    return self.send(store.task_detail(project_id, query.get('task_id', [''])[0]))
                 if parsed.path == '/api/rules':
                     return self.send({'global_rules': store.list_global_rules(), 'project_rules': store.list_project_rules(project_id)})
                 after = int(query.get('after', ['0'])[0])
@@ -90,8 +94,12 @@ def _handler_factory(store, index_path):
                     raise ValueError('JSON object required')
                 if path == '/api/projects':
                     result = store.create_project(payload.get('name', ''), payload.get('workspace', ''))
+                elif path == '/api/tasks':
+                    result = store.create_task(payload['project_id'], payload['task_id'], payload['title'], payload.get('description', ''))
+                elif path == '/api/tasks/transition':
+                    result = store.transition_task(payload['project_id'], payload['task_id'], payload['state'], payload['expected_revision'], payload.get('note', ''), payload.get('notification_id'), payload.get('claim_token'))
                 elif path == '/api/notifications':
-                    result = store.notify(payload['project_id'], payload['recipient'], payload['memo_path'], payload['version_hash'])
+                    result = store.notify(payload['project_id'], payload['recipient'], payload['memo_path'], payload['version_hash'], payload.get('task_id'))
                     result.pop('claim_token', None)
                 elif path == '/api/notifications/claim':
                     result = {'notification': store.claim(payload['project_id'], payload['recipient'], payload['worker_id'], payload.get('lease_seconds', 120))}
