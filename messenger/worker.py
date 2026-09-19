@@ -31,13 +31,19 @@ class WorkerClient:
         with self.opener.open(request, timeout=15) as response:
             return json.load(response)
 
-    def notify(self, recipient, memo_path, version_hash):
-        return self.request('/api/notifications', dict(project_id=self.project_id,
-            recipient=recipient, memo_path=memo_path, version_hash=version_hash))
+    def notify(self, recipient, memo_path, version_hash, task_id=None):
+        payload = dict(project_id=self.project_id, recipient=recipient, memo_path=memo_path, version_hash=version_hash)
+        if task_id is not None:
+            payload['task_id'] = task_id
+        return self.request('/api/notifications', payload)
 
-    def claim(self, lease_seconds=120):
-        return self.request('/api/notifications/claim', dict(project_id=self.project_id,
-            recipient=self.recipient, worker_id=self.worker_id, lease_seconds=lease_seconds))['notification']
+    def claim(self, lease_seconds=120, notification_id=None, task_id=None):
+        payload = dict(project_id=self.project_id, recipient=self.recipient, worker_id=self.worker_id, lease_seconds=lease_seconds)
+        if notification_id is not None:
+            payload['notification_id'] = notification_id
+        if task_id is not None:
+            payload['task_id'] = task_id
+        return self.request('/api/notifications/claim', payload)['notification']
 
     def ack(self, claim, action, **payload):
         if claim['project_id'] != self.project_id or claim['recipient'] != self.recipient or claim['worker_id'] != self.worker_id:
@@ -70,7 +76,7 @@ def main():
     parser = argparse.ArgumentParser(description='One-shot memo protocol adapter; run from an EXISTING worker. No AI spawned.')
     parser.add_argument('--url', default='http://127.0.0.1:8765')
     parser.add_argument('--project', type=int, required=True)
-    parser.add_argument('--recipient', choices=['emma', 'jaemin', 'user'], required=True)
+    parser.add_argument('--recipient', required=True, help='registered agent ID; server rejects unknown or disabled agents')
     parser.add_argument('--worker', required=True, help='existing session/worker identity label, not a connection')
     sub = parser.add_subparsers(dest='action', required=True)
     notify = sub.add_parser('notify')

@@ -64,10 +64,14 @@ class TaskTests(unittest.TestCase):
             with opener.open(Request(base+path, data=None if body is None else json.dumps(body).encode(), headers={'Content-Type':'application/json'})) as r:
                 return json.load(r)
         try:
+            self.assertEqual(request('/api/health')['audit'], 'collaboration-audit-v1')
             with opener.open(base) as r:
                 html = r.read().decode()
             self.assertIn('const changed=', html)
             self.assertIn('id="kanban"', html)
+            self.assertIn('id="audit-timeline"', html)
+            self.assertIn('async function refreshAudit(', html)
+            self.assertIn('/api/audit/events?project_id=', html)
             self.assertIn('localStorage', html)
             self.assertIn('자동 깨우기 미구현', html)
             t = request('/api/tasks', dict(project_id=self.project, task_id='HTTP-1', title='HTTP'))

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "agents": [
+    {"id": "emma", "provider": "hermes", "role": "reviewer", "enabled": true},
+    {"id": "jaemin", "provider": "antigravity-agy", "role": "executor", "enabled": true},
+    {"id": "user", "provider": "human", "role": "approver", "enabled": true},
+    {"id": "opencode", "provider": "opencode", "role": "executor", "enabled": false},
+    {"id": "openclaw", "provider": "openclaw", "role": "executor", "enabled": false}
+  ]
+}

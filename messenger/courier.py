@@ -9,10 +9,13 @@ from contextlib import closing
 
 from .store import MessageStore
 from .tasks import TaskMixin
+from .audit import AuditMixin
+from .agents import AgentRegistry
 
 
-class CourierStore(TaskMixin, MessageStore):
-    def __init__(self, path):
+class CourierStore(AuditMixin, TaskMixin, MessageStore):
+    def __init__(self, path, agents=None):
+        self.agents = agents or AgentRegistry.load_default()
         path = Path(path)
         if path.exists():
             with closing(sqlite3.connect(path)) as source:
@@ -23,6 +26,7 @@ class CourierStore(TaskMixin, MessageStore):
                         source.backup(target)
         super().__init__(path)
         self.initialize_tasks()
+        self.initialize_audit()
         with self._connect() as con:
             # Replace only obsolete built-in rules; preserve user project rules/history.
             con.executemany('DELETE FROM global_rules WHERE text=?', [(text,) for text in (
@@ -80,8 +84,7 @@ class CourierStore(TaskMixin, MessageStore):
         return str(path)
 
     def notify(self, project_id, recipient, memo_path, version_hash, task_id=None):
-        if recipient not in {'emma', 'jaemin', 'user'}:
-            raise ValueError('unsupported recipient')
+        self.agents.require_enabled(recipient)
         if task_id is not None:
             self.task_detail(project_id, task_id)
         path = self.memo(project_id, memo_path, version_hash)
@@ -101,19 +104,27 @@ class CourierStore(TaskMixin, MessageStore):
             raise ValueError('lease_seconds must be integer 1..3600')
         return value
 
-    def claim(self, project_id, recipient, worker_id, lease_seconds=120):
+    def claim(self, project_id, recipient, worker_id, lease_seconds=120, notification_id=None, task_id=None):
         if self.get_project(project_id)['archived']:
             raise ValueError('active project required')
-        if recipient not in {'emma', 'jaemin', 'user'}:
-            raise ValueError('unsupported recipient')
+        self.agents.require_enabled(recipient)
         if not isinstance(worker_id, str) or not worker_id.strip() or len(worker_id) > 200:
             raise ValueError('worker_id required, max 200 characters')
         duration = self.lease_seconds(lease_seconds)
         with self._connect() as con:
             con.execute('BEGIN IMMEDIATE')
             now = time.time()
-            row = con.execute("SELECT * FROM notifications WHERE project_id=? AND recipient=? AND (status='pending' OR (status IN ('claimed','read') AND lease_until<=?)) ORDER BY id LIMIT 1",
-                              (project_id, recipient, now)).fetchone()
+            query = ("SELECT * FROM notifications WHERE project_id=? AND recipient=? "
+                     "AND (status='pending' OR (status IN ('claimed','read') AND lease_until<=?))")
+            params = [project_id, recipient, now]
+            if notification_id is not None:
+                query += " AND id=?"
+                params.append(int(notification_id))
+            if task_id is not None:
+                query += " AND task_id=?"
+                params.append(str(task_id))
+            query += " ORDER BY id LIMIT 1"
+            row = con.execute(query, params).fetchone()
             if row is None:
                 return None
             con.execute("UPDATE notifications SET status='claimed',worker_id=?,claim_token=?,lease_until=?,attempts=attempts+1,read_at=NULL,error=NULL WHERE id=?",

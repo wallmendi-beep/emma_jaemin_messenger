@@ -5,7 +5,7 @@
 <title>엠마 · 재민이 메모 우편함</title>
 <style>
 body{font:16px/1.6 'Malgun Gothic',sans-serif;max-width:1080px;margin:30px auto;padding:0 18px;background:#f4f1ea;color:#222}section,details{background:#fffdf8;padding:20px;margin:16px 0;border:1px solid #d5d0c6;border-radius:12px}h1{font-size:28px}label{display:block;margin:10px 0}input,select,button{font:inherit;padding:8px;border:1px solid #aaa;border-radius:5px}input{box-sizing:border-box;width:100%}button{cursor:pointer;background:#23485e;color:white}button:disabled{opacity:.5}article{border-top:1px solid #ddd;padding:12px 0;white-space:pre-wrap;overflow-wrap:anywhere}.error,#error{color:#a12727}.completed{color:#1d6240}small{color:#555}#connection{font-weight:bold}summary{cursor:pointer}
-body{max-width:none;margin:20px;--line:#d5d0c6}h1{font-size:24px;margin:0}h2{font-size:19px;margin:0 0 12px}h3{font-size:15px}section,details{border-radius:6px;padding:16px}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #9b630c;outline-offset:2px}button{min-height:44px}select,textarea{max-width:100%;font:inherit}textarea{width:100%;box-sizing:border-box;min-height:80px}#dashboard{display:grid;grid-template-columns:var(--setup-width,350px) 12px minmax(0,1fr);gap:0}#setup,#live{min-width:0;overflow:auto}#splitter{cursor:col-resize;touch-action:none;background:transparent;border:0;border-radius:0;color:#555;padding:0}#splitter:hover,#splitter:focus{background:#d5d0c6}#kanban{box-sizing:border-box;display:grid;grid-template-columns:repeat(5,minmax(130px,1fr));gap:10px;overflow:auto;min-height:180px;resize:vertical;padding-bottom:12px}.lane{background:#f4f1ea;padding:8px;border:1px solid var(--line)}.task-card{display:block;width:100%;text-align:left;margin:8px 0;background:#fffdf8;color:#222;white-space:pre-wrap;overflow-wrap:anywhere;border-color:var(--line)}.task-card[aria-pressed=true]{outline:2px solid #23485e;background:#e6edf0}#task-detail{white-space:pre-wrap;overflow-wrap:anywhere}progress{width:100%;height:18px;accent-color:#23485e}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.notice{background:#ece6d9;padding:10px}#task-history{max-height:260px;overflow:auto}@media(max-width:800px){body{margin:12px}#dashboard{display:block}#splitter{display:none}#kanban{grid-template-columns:repeat(5,160px)}}
+body{max-width:none;margin:20px;--line:#d5d0c6}h1{font-size:24px;margin:0}h2{font-size:19px;margin:0 0 12px}h3{font-size:15px}section,details{border-radius:6px;padding:16px}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #9b630c;outline-offset:2px}button{min-height:44px}select,textarea{max-width:100%;font:inherit}textarea{width:100%;box-sizing:border-box;min-height:80px}#dashboard{display:grid;grid-template-columns:var(--setup-width,350px) 12px minmax(0,1fr);gap:0}#setup,#live{min-width:0;overflow:auto}#splitter{cursor:col-resize;touch-action:none;background:transparent;border:0;border-radius:0;color:#555;padding:0}#splitter:hover,#splitter:focus{background:#d5d0c6}#kanban{box-sizing:border-box;display:grid;grid-template-columns:repeat(5,minmax(130px,1fr));gap:10px;overflow:auto;min-height:180px;resize:vertical;padding-bottom:12px}.lane{background:#f4f1ea;padding:8px;border:1px solid var(--line)}.task-card{display:block;width:100%;text-align:left;margin:8px 0;background:#fffdf8;color:#222;white-space:pre-wrap;overflow-wrap:anywhere;border-color:var(--line)}.task-card[aria-pressed=true]{outline:2px solid #23485e;background:#e6edf0}#task-detail{white-space:pre-wrap;overflow-wrap:anywhere}progress{width:100%;height:18px;accent-color:#23485e}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.notice{background:#ece6d9;padding:10px}#task-history{max-height:260px;overflow:auto}.audit-event{padding:10px;margin:8px 0}.audit-event summary{font-weight:bold}.audit-body{white-space:pre-wrap;overflow-wrap:anywhere;border-top:1px solid var(--line);padding-top:8px}.audit-meta{white-space:pre-wrap;color:#555;font-size:13px}@media(max-width:800px){body{margin:12px}#dashboard{display:block}#splitter{display:none}#kanban{grid-template-columns:repeat(5,160px)}}
 </style>
 <h1>엠마 · 재민이 작업 대시보드</h1>
 <p>공유 MD를 쓴 뒤 “이 버전을 읽어 주세요” 알림을 남깁니다. <strong>기존 작업 세션이 polling adapter를 연동해야 수신합니다.</strong> 새 AI를 실행하거나 열린 터미널에 주입하지 않습니다.</p>
@@ -35,6 +35,7 @@ body{max-width:none;margin:20px;--line:#d5d0c6}h1{font-size:24px;margin:0}h2{fon
 </aside><button id="splitter" role="separator" aria-label="설정 패널 너비 조절" aria-orientation="vertical" aria-valuemin="260" aria-valuemax="650" aria-valuenow="350">⋮</button><main id="live">
 <section><div class="toolbar"><h2>프로젝트 진행</h2><button id="refresh" type="button">지금 새로고침</button></div><p id="progress-label">불러오는 중</p><progress id="progress" max="1" value="0" aria-label="완료 작업 / 전체 작업"></progress><small>완료 상태 작업 수 / 전체 작업 수. 소요 시간·AI 수행률이 아니며 수동 변경도 포함됩니다.</small><div id="kanban" aria-label="작업 칸반"></div></section>
 <section><h2>선택한 작업</h2><div id="task-detail">칸반에서 작업을 선택하세요.</div><form id="transition-form" hidden><label>상태<select id="task-state"><option value="todo">대기</option><option value="in_progress">진행</option><option value="review">검토</option><option value="blocked">보류</option><option value="done">완료</option></select></label><label>변경 사유<input id="task-note" maxlength="2000"></label><button disabled>수동 상태 변경</button></form><div id="task-history"></div></section>
+<section><div class="toolbar"><h2>협업 대화 감사기록</h2><button id="all-audit" type="button">프로젝트 전체 보기</button></div><p id="audit-scope">프로젝트 전체 기록</p><small>실제 전송·수신한 자연어 원문입니다. 이 기록은 다음 AI 작업문맥에 자동 첨부되지 않습니다.</small><div id="audit-timeline" aria-live="polite"></div></section>
 <section><h2>전달 상태</h2><p>pending 대기 · claimed 수신권 확보 · read 읽음 확인 · completed 결과 연결 · error 오류</p><small>claimed/read 임대 만료는 다음 poll에서 재수신됩니다. 읽음은 작업자의 확인이며 AI 이해를 증명하지 않습니다.</small><div id="notifications" aria-live="polite"></div></section>
 <details><summary>이전 대화 — 읽기 전용 (기존 상태 그대로 보존)</summary><div id="history"></div><button id="more-history" type="button">다음 기록 보기</button></details>
 <details><summary>기존 협업 원칙 — 조회</summary><div id="rules"></div></details>
@@ -42,30 +43,69 @@ body{max-width:none;margin:20px;--line:#d5d0c6}h1{font-size:24px;margin:0}h2{fon
 <script>
 const $=s=>document.querySelector(s);
 let projectId=1, historyAfter=0, generation=0, selectedTask=null, loadedTask=null, loadedProject=null, taskRevision=null, taskStateDirty=false, taskLoadSequence=0, selectionEpoch=0, transitionInFlight=false;
-const states={todo:'대기',in_progress:'진행',review:'검토',blocked:'보류',done:'완료'};
-function invalidateTaskDetail(message='칸반에서 작업을 선택하세요.'){$('#task-detail').textContent=message;$('#transition-form').hidden=true;$('#transition-form button').disabled=true;$('#task-history').replaceChildren();loadedTask=null;loadedProject=null;taskRevision=null;}
+let expandedAuditKeys=new Set();
+const states={todo:'대기',in_progress:'진행',review:'검수',blocked:'보류',done:'완료'};
+const displayLanes=[['waiting','대기',['todo']],['in_progress','진행',['in_progress']],['review','검수',['review']],['blocked','보류',['blocked']],['done','완료',['done']]];
+function stateLabel(state){return states[state];}
+function renderProjectCompletion(s){
+ const box=$('#project-complete'); if(!box)return;
+ const isComplete=s.total>0&&s.completed===s.total;
+ box.hidden=!isComplete;
+ if(isComplete){
+  $('#completion-label').textContent=`완결 · ${s.completed}/${s.total} 카드 최종 승인`;
+  $('#open-workspace').disabled=false;
+ }
+}
+async function openProjectWorkspace(){
+ const button=$('#open-workspace');button.disabled=true;
+ try{await api('/api/projects/open-workspace',{project_id:projectId});}
+ catch(error){fail(error);button.disabled=false;}
+}
+async function refreshTaskArtifacts(taskId){
+ const box=$('#task-artifacts');if(!box)return;
+ const data=await api(`/api/tasks/artifacts?project_id=${projectId}&task_id=${encodeURIComponent(taskId)}`);
+ box.replaceChildren();
+ if(!data.artifacts.length){box.hidden=true;return;}
+ box.hidden=false;
+ const heading=document.createElement('h3');heading.textContent='부분 결과물';box.append(heading);
+ for(const artifact of data.artifacts){const button=document.createElement('button');button.type='button';button.textContent=`${artifact.name} 열기`;button.onclick=async()=>{try{button.disabled=true;await api('/api/tasks/open-artifact',{project_id:projectId,task_id:taskId,path:artifact.path});}catch(error){fail(error);}finally{button.disabled=false;}};box.append(button);}
+}
+let executionMode='card_approval';
+async function refreshExecutionMode(){
+ const data=await api('/api/projects');const project=data.projects.find(p=>p.id===projectId);
+ executionMode=project?.execution_mode||'card_approval';
+ const select=$('#execution-mode');if(select)select.value=executionMode;
+ const label=$('#execution-mode-label');if(label)label.textContent=executionMode==='project_auto'?'프로젝트 전체 자동실행':'카드별 승인요청';
+}
+async function approveSelectedCard(){
+ if(!selectedTask)return;
+ await api('/api/tasks/approve-serial',{project_id:projectId,task_id:selectedTask});
+ await refresh();
+}
+function invalidateTaskDetail(message='칸반에서 작업을 선택하세요.'){$('#task-detail').textContent=message;const artifacts=$('#task-artifacts');if(artifacts){artifacts.hidden=true;artifacts.replaceChildren();}const hold=$('#hold-card');if(hold)hold.hidden=true;$('#transition-form').hidden=true;$('#transition-form button').disabled=true;$('#task-history').replaceChildren();loadedTask=null;loadedProject=null;taskRevision=null;}
 async function selectTask(id){
- const changed=selectedTask!==id;const p=projectId,g=generation;if(changed){selectedTask=id;selectionEpoch++;taskStateDirty=false;invalidateTaskDetail('작업 세부 정보 불러오는 중');}const loadSequence=++taskLoadSequence;
+ const changed=selectedTask!==id;const p=projectId,g=generation;if(changed){selectedTask=id;expandedAuditKeys=new Set();selectionEpoch++;taskStateDirty=false;invalidateTaskDetail('작업 세부 정보 불러오는 중');}const loadSequence=++taskLoadSequence;
  const t=await api(`/api/tasks/detail?project_id=${p}&task_id=${encodeURIComponent(id)}`);
  if(loadSequence!==taskLoadSequence||g!==generation||selectedTask!==id||t.task_id!==id)return;
- loadedTask=id;loadedProject=p;taskRevision=t.revision;$('#task-detail').textContent=`P-${p} / ${t.task_id}\n${t.title}\n${t.description}\n현재 상태: ${states[t.state]} · 수정본 ${t.revision}`;
- $('#transition-form').hidden=false;$('#transition-form button').disabled=transitionInFlight;if(!taskStateDirty)$('#task-state').value=t.state;$('#task-history').replaceChildren();
+ loadedTask=id;loadedProject=p;taskRevision=t.revision;$('#task-detail').textContent=`P-${p} / ${t.task_id}\n${t.title}\n${t.description}\n현재 상태: ${stateLabel(t.state)} · 수정본 ${t.revision}`;
+ $('#transition-form').hidden=false;$('#transition-form button').disabled=transitionInFlight;if(!taskStateDirty)$('#task-state').value=t.state;const approve=$('#approve-card');if(approve)approve.hidden=true;const hold=$('#hold-card');if(hold){hold.hidden=t.state!=='done';hold.dataset.taskId=id;$('#hold-reason').value='';}$('#task-history').replaceChildren();
  for(const h of t.history)article($('#task-history'),`${new Date(h.created_at*1000).toLocaleString()} · ${h.from_state?states[h.from_state]+' → ':''}${states[h.to_state]}\n${h.provenance==='manual'?'수동 기록':'작업자 보고 (자기 신고)'} · ${h.actor}\n${h.note}`);
  document.querySelectorAll('.task-card').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.task===id)));
+ await Promise.all([refreshTaskArtifacts(id),refreshAudit(id)]);
 }
 async function refreshTasks(){
  const p=projectId,g=generation;const d=await api(`/api/tasks?project_id=${p}`);if(g!==generation)return;
- const s=d.summary;$('#progress-label').textContent=s.total?`P-${p} · 완료 ${s.completed} / 전체 ${s.total} · ${Object.entries(s.states).map(([k,v])=>states[k]+' '+v).join(' · ')}`:`P-${p} · 등록된 작업 없음 · 완료 0 / 전체 0`;
+ const s=d.summary;renderProjectCompletion(s);const laneCount=source=>source.reduce((n,state)=>n+s.states[state],0);$('#progress-label').textContent=s.total?`P-${p} · 완료 ${s.completed} / 전체 ${s.total} · ${displayLanes.map(([,label,source])=>label+' '+laneCount(source)).join(' · ')}`:`P-${p} · 등록된 작업 없음 · 완료 0 / 전체 0`;
  $('#progress').max=s.total||1;$('#progress').value=s.completed;
- const old=$('#memo-task').value;$('#memo-task').replaceChildren(new Option('작업 미지정 (기존 방식)',''));
+ const memoSelect=$('#memo-task'); const old=memoSelect?.value||'';memoSelect?.replaceChildren(new Option('작업 미지정 (기존 방식)',''));
  $('#kanban').replaceChildren();
- for(const [state,label] of Object.entries(states)){
-  const lane=document.createElement('div');lane.className='lane';const heading=document.createElement('h3');heading.textContent=`${label} · ${s.states[state]}`;lane.append(heading);
-  for(const t of d.tasks.filter(t=>t.state===state)){const b=document.createElement('button');b.className='task-card';b.dataset.task=t.task_id;b.setAttribute('aria-pressed',String(selectedTask===t.task_id));b.textContent=`${t.task_id}\n${t.title}`;b.onclick=()=>selectTask(t.task_id).catch(fail);lane.append(b);}
+ for(const [,label,source] of displayLanes){
+  const lane=document.createElement('div');lane.className='lane';const heading=document.createElement('h3');heading.textContent=`${label} · ${laneCount(source)}`;lane.append(heading);
+  for(const t of d.tasks.filter(t=>source.includes(t.state))){const b=document.createElement('button');b.className='task-card';b.dataset.task=t.task_id;b.setAttribute('aria-pressed',String(selectedTask===t.task_id));b.textContent=`${t.task_id}\n${t.title}`;b.onclick=()=>selectTask(t.task_id).catch(fail);lane.append(b);}
   $('#kanban').append(lane);
  }
- for(const t of d.tasks)$('#memo-task').append(new Option(t.task_id+' · '+t.title,t.task_id));
- if(d.tasks.some(t=>t.task_id===old))$('#memo-task').value=old;
+ for(const t of d.tasks)memoSelect?.append(new Option(t.task_id+' · '+t.title,t.task_id));
+ if(memoSelect&&d.tasks.some(t=>t.task_id===old))memoSelect.value=old;
  if(selectedTask)await selectTask(selectedTask);else invalidateTaskDetail();
 }
 $('#task-form').onsubmit=async e=>{e.preventDefault();try{const p=projectId;const t=await api('/api/tasks',{project_id:p,task_id:$('#task-id').value,title:$('#task-title').value,description:$('#task-description').value});if(p!==projectId)return;selectedTask=t.task_id;selectionEpoch++;taskLoadSequence++;taskStateDirty=false;invalidateTaskDetail('작업 세부 정보 불러오는 중');e.target.reset();await refresh();}catch(e){fail(e);}};
@@ -85,6 +125,8 @@ async function api(path,body){
 }
 function fail(e){$('#error').textContent=e.message;}
 function article(parent,text,status=''){const el=document.createElement('article');el.className=status;el.textContent=text;parent.append(el);}
+function renderAuditEvent(parent,event){const box=document.createElement('details');box.className='audit-event';box.open=expandedAuditKeys.has(event.event_key);box.ontoggle=()=>{if(box.open)expandedAuditKeys.add(event.event_key);else expandedAuditKeys.delete(event.event_key);};const summary=document.createElement('summary');const when=new Date(event.created_at*1000).toLocaleString();summary.textContent=`#${event.id} · ${when} · ${event.sender} → ${event.recipient} · ${event.kind} · 작업 ${event.task_id} · 실행 ${event.run_id}`;const body=document.createElement('div');body.className='audit-body';body.textContent=event.body;const meta=document.createElement('div');meta.className='audit-meta';meta.textContent=`본문 SHA-256 ${event.body_sha256}${event.conversation_id?'\n대화 ID '+event.conversation_id:''}${event.artifact_path?'\n결과 파일 '+event.artifact_path+'\n파일 SHA-256 '+event.artifact_sha256:''}`;box.append(summary,body,meta);parent.append(box);}
+async function refreshAudit(taskId=selectedTask){const p=projectId,g=generation;let after=0,rows=[];const filter=taskId?`&task_id=${encodeURIComponent(taskId)}`:'';while(true){const data=await api(`/api/audit/events?project_id=${p}${filter}&after=${after}&limit=500`);rows.push(...data.events);if(data.events.length<500)break;after=data.next_after;}if(g!==generation||p!==projectId)return;$('#audit-scope').textContent=taskId?`작업 ${taskId} 기록`:'프로젝트 전체 기록';$('#audit-timeline').replaceChildren();if(!rows.length)$('#audit-timeline').textContent='기록 없음';for(const event of rows)renderAuditEvent($('#audit-timeline'),event);}
 async function loadProjects(selected){
  const data=await api('/api/projects');$('#project').replaceChildren();
  for(const p of data.projects){const o=document.createElement('option');o.value=p.id;o.textContent=`P-${p.id} · ${p.name}`;$('#project').append(o);}
@@ -92,7 +134,9 @@ async function loadProjects(selected){
  projectId=Number($('#project').value);selectedTask=null;selectionEpoch++;taskLoadSequence++;taskStateDirty=false;generation++;invalidateTaskDetail();historyAfter=0;$('#history').replaceChildren();$('#more-history').disabled=false;
 }
 async function refresh(){
+ await refreshExecutionMode();
  await refreshTasks();
+ if(!selectedTask)await refreshAudit(null);
  const p=projectId,g=generation;let after=0,rows=[];
  while(true){const data=await api(`/api/notifications?project_id=${p}&after=${after}&limit=500`);rows.push(...data.notifications);if(data.notifications.length<500)break;after=data.next_after;}
  if(g!==generation)return;
@@ -106,9 +150,88 @@ async function history(){const p=projectId,g=generation;const d=await api(`/api/
 async function rules(){const g=generation;const d=await api(`/api/rules?project_id=${projectId}`);if(g!==generation)return;$('#rules').replaceChildren();for(const r of [...d.global_rules,...d.project_rules])article($('#rules'),`${r.status||'보호 원칙'}: ${r.text}`);}
 $('#project').onchange=async()=>{projectId=Number($('#project').value);selectedTask=null;selectionEpoch++;taskLoadSequence++;taskStateDirty=false;generation++;invalidateTaskDetail();historyAfter=0;$('#history').replaceChildren();$('#more-history').disabled=false;try{await Promise.all([refresh(),rules()]);}catch(e){fail(e);}};
 $('#more-history').onclick=()=>history().catch(fail);
+$('#all-audit').onclick=()=>refreshAudit(null).catch(fail);
 $('#memo-form').onsubmit=async e=>{e.preventDefault();$('#send').disabled=true;$('#error').textContent='';try{await api('/api/notifications',{project_id:projectId,recipient:$('#recipient').value,memo_path:$('#memo-path').value,version_hash:$('#version-hash').value,task_id:$('#memo-task').value||null});await refresh();}catch(e){fail(e);}finally{$('#send').disabled=false;}};
 $('#project-form').onsubmit=async e=>{e.preventDefault();try{const p=await api('/api/projects',{name:$('#project-name').value,workspace:$('#workspace').value});await loadProjects(p.id);await Promise.all([refresh(),rules()]);}catch(e){fail(e);}};
 async function poll(){try{await refresh();}catch(e){$('#connection').textContent='연결 실패';fail(e);}setTimeout(poll,2000);}
 (async()=>{try{await loadProjects();await rules();poll();}catch(e){fail(e);}})();
+
+/* Action-first project console: keeps the existing local API contract intact. */
+function selectDoorbell(){
+  const audit=document.querySelector('#doorbell-flow');
+  audit.hidden=false;
+  audit.scrollIntoView({block:'nearest'});
+  refreshAudit(selectedTask).catch(fail);
+}
+function redesignDashboard(){
+  document.title='Doorbell · Emma & Jaemin';
+  document.querySelector('h1').innerHTML='<span class="doorbell-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></span>Doorbell <small>· Emma &amp; Jaemin</small>';
+  document.querySelector('h1').insertAdjacentHTML('afterend', '<p class="purpose">프로젝트별로 <strong>지금 기다리는 결정</strong>, 만든 파일, 검수 왕복만 확인합니다.</p>');
+  const purpose=document.querySelector('.purpose');
+  purpose.nextElementSibling.remove();
+  purpose.nextElementSibling.remove();
+  document.querySelector('.notice').remove();
+  document.querySelector('#dashboard').insertAdjacentHTML('beforebegin', `
+    <section id="execution-control" class="command-strip" aria-label="실행 모드">
+      <div><span class="eyebrow">실행 모드</span><strong id="execution-mode-label">카드별 승인요청</strong><small>프로젝트 전체 자동실행 또는 각 카드 최종 승인 요청을 선택합니다.</small></div>
+      <select id="execution-mode" aria-label="프로젝트 실행 모드"><option value="project_auto">프로젝트 전체 자동실행</option><option value="card_approval">카드별 승인요청</option></select>
+    </section>
+    <section id="project-complete" class="project-complete" hidden aria-live="polite">
+      <div><span class="eyebrow">프로젝트 상태</span><strong id="completion-label">완결</strong><small>모든 카드가 최종 승인되어 순차 실행이 끝났습니다.</small></div>
+      <button type="button" id="open-workspace">완성결과물 보기</button>
+    </section>
+    <section id="action-now" class="command-strip" aria-label="현재 할 일">
+      <div><span class="eyebrow">현재 할 일</span><strong id="next-action">프로젝트와 작업을 선택하세요.</strong><small>작업 상태와 초인종 기록에서 다음 행동을 바로 찾습니다.</small></div>
+      <div class="command-buttons"><button type="button" id="jump-work">작업 보기</button><button type="button" id="jump-bell">초인종 보기</button></div>
+    </section>`);
+  const live=document.querySelector('#live');
+  const setup=document.querySelector('#setup');
+  setup.dataset.surface='project-workspace';
+  const controls=document.createElement('section');
+  controls.id='project-controls';
+  controls.setAttribute('aria-label','프로젝트 제어');
+  controls.append($('#execution-control'), $('#project-complete'));
+  setup.appendChild(controls);
+  setup.querySelector('h2').textContent='프로젝트 선택 · 작업 등록';
+  const sections=[...live.querySelectorAll(':scope > section')];
+  const legacy=[...live.querySelectorAll(':scope > details')];
+  const progress=sections[0], detail=sections[1], audit=sections[2], delivery=sections[3];
+  detail.id='artifact-review'; detail.querySelector('h2').textContent='산출물 · 검수';
+  detail.querySelector('#task-detail').insertAdjacentHTML('afterend','<div id="task-artifacts" hidden></div><form id="hold-card" hidden><label>보류 사유<textarea id="hold-reason" required maxlength="2000" placeholder="결과물에서 확인한 수정·재검토 사유를 입력하세요."></textarea></label><button type="submit">보류로 이동 · 사유 전달</button></form>');
+  detail.querySelector('h2').insertAdjacentHTML('afterend','<button type="button" id="approve-card" hidden>이 카드 승인 · 다음 카드 실행</button>');
+  audit.id='doorbell-flow'; audit.querySelector('h2').textContent='초인종 흐름';
+  delivery.hidden=true;
+  live.replaceChildren(progress, detail, audit, delivery, ...legacy);
+  document.querySelector('#jump-work').onclick=()=>detail.scrollIntoView({block:'nearest'});
+  document.querySelector('#jump-bell').onclick=selectDoorbell;
+  document.querySelector('#open-workspace').onclick=openProjectWorkspace;
+  document.querySelector('#approve-card').onclick=()=>approveSelectedCard().catch(fail);
+  document.querySelector('#hold-card').onsubmit=async event=>{event.preventDefault();const form=event.currentTarget,reason=$('#hold-reason').value.trim();if(!reason)return;const button=form.querySelector('button');try{button.disabled=true;await api('/api/tasks/hold',{project_id:projectId,task_id:form.dataset.taskId,reason});await refresh();}catch(error){fail(error);}finally{button.disabled=false;}};
+  document.querySelector('#execution-mode').onchange=async event=>{try{await api('/api/projects/execution-mode',{project_id:projectId,execution_mode:event.target.value});await refreshExecutionMode();if(selectedTask)await selectTask(selectedTask);}catch(error){fail(error);}};
+  const originalSelectTask=selectTask;
+  window.selectTask=async function(id){ await originalSelectTask(id); const t=document.querySelector('#task-detail').textContent; const state=(t.match(/현재 상태: ([^ ·]+)/)||[])[1]||'작업'; document.querySelector('#next-action').textContent=`${id} · ${state} — 산출물과 초인종 흐름을 확인하세요.`; };
+}
+function monitoringOnlyDashboard(){
+  const projectForm=$('#project-form');
+  const taskForm=$('#task-form');
+  const memoForm=$('#memo-form');
+  projectForm.closest('details').remove();
+  taskForm.remove();
+  memoForm.closest('details').remove();
+  $('#transition-form').hidden=true;
+  $('#setup small').textContent='자동 기록을 보는 화면입니다. 작업 지시·상태 변경은 초인종 실행기가 남긴 기록만 표시합니다.';
+  $('#setup h2').textContent='프로젝트 선택';
+}
+monitoringOnlyDashboard();
+redesignDashboard();
 </script>
+<style>
+:root{--ink:#1f2933;--muted:#66737d;--paper:#f7f5f0;--panel:#fff;--line:#d8d4ca;--accent:#1f5968;--alert:#8a4b00}
+body{max-width:1320px;margin:22px auto;background:var(--paper);color:var(--ink)}h1{letter-spacing:-.04em;font-size:31px}.purpose{margin:4px 0 20px;color:var(--muted)}.project-complete{display:flex;justify-content:space-between;gap:20px;align-items:center;background:#e2f1e7;border:1px solid #86ae91;padding:15px 18px;margin:0 0 14px;border-radius:6px}.project-complete strong,.project-complete small{display:block}.project-complete button{background:#1d6240}.project-complete small{color:var(--muted);margin-top:2px}#dashboard{grid-template-columns:var(--setup-width,350px) 10px minmax(0,1fr)}#setup{display:flex;flex-direction:column;min-height:100%}#setup section{margin-top:0}#project-controls{margin-top:auto;margin-bottom:0;padding:12px;background:#e7eeeb;border:1px solid #b5c8c2;border-radius:6px}#project-controls .command-strip,#project-controls .project-complete{margin:0;border:0;border-radius:0;padding:0;background:transparent}#project-controls .command-strip{align-items:flex-start;flex-direction:column;gap:8px}#project-controls .project-complete{margin-top:12px;align-items:flex-start;flex-direction:column;gap:8px}.command-strip{display:flex;justify-content:space-between;gap:20px;align-items:center;background:#e7eeeb;border:1px solid #b5c8c2;padding:15px 18px;margin:0 0 14px;border-radius:6px}.command-strip strong,.command-strip small{display:block}.command-strip small{color:var(--muted);margin-top:2px}.eyebrow{font-size:12px;font-weight:bold;color:var(--accent);letter-spacing:.08em}.command-buttons{display:flex;gap:8px;flex-wrap:wrap}.command-buttons button{background:var(--accent)}#live{display:grid;gap:14px;align-content:start}#live section{margin:0;background:var(--panel);border-radius:6px}#kanban{min-height:130px;resize:vertical}.lane{background:#f4f2ec}.task-card{min-height:50px}.task-card:hover{background:#edf4f2;border-color:var(--accent)}#artifact-review{border-top:4px solid #9e7833}#doorbell-flow{border-top:4px solid var(--accent)}#doorbell-flow .audit-event{background:#fafafa;border:1px solid var(--line);border-radius:4px}#doorbell-flow summary{color:#29454f}.toolbar h2{margin-right:auto}#notifications,#history,#rules,#transition-form{display:none!important}@media(max-width:800px){.command-strip{align-items:flex-start;flex-direction:column}#dashboard{display:block}#project-workspace{margin-bottom:14px}}
+</style>
+<style>
+/* Doorbell desktop visual layer: local-only, no remote font or asset dependency. */
+:root{--paper:#f7f6f2;--panel:#fff;--ink:#17211f;--muted:#68736f;--line:#dfe5df;--accent:#18705b;--accent-pale:#e5f3ec;--amber:#9e6410}
+body{max-width:1540px;margin:0 auto;padding:22px 32px 36px;font-family:"Segoe UI","Malgun Gothic",sans-serif;background:var(--paper);color:var(--ink)}h1{display:flex;align-items:center;gap:10px;font-size:20px;letter-spacing:-.025em;margin:0}.doorbell-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:var(--accent);color:#fff}.doorbell-mark svg{width:20px;height:20px}h1 small{font-size:13px;font-weight:500;color:var(--muted);letter-spacing:0}.purpose{font-size:13px;margin:6px 0 18px}.command-strip{border-radius:14px;background:#21342e;border-color:#21342e;color:#fff;box-shadow:0 1px 2px #17211f0d,0 10px 28px #17211f0a}.command-strip .eyebrow,.command-strip small{color:#c3d8cd}.command-buttons button{background:#fff;color:#19342a;border:0;border-radius:9px}.project-complete,#project-controls{border-radius:14px}.project-complete{background:var(--accent-pale);border-color:#b8d7c9}.project-complete button{background:var(--accent)}#dashboard{gap:16px;grid-template-columns:var(--setup-width,292px) 10px minmax(0,1fr)}#setup,#live section,details{border-color:var(--line);border-radius:14px;box-shadow:0 1px 2px #17211f0d,0 10px 28px #17211f0a;background:var(--panel)}#setup{min-height:680px}#project-controls{background:#f1f5f1;border-color:#d7e1d9}.lane{background:#fafbf9;border-color:var(--line);border-radius:11px}.task-card{border-color:var(--line);border-radius:9px;background:#fff;color:var(--ink);min-height:56px}.task-card:hover{background:#fff;border-color:#9dc8b6;box-shadow:0 6px 16px #17211f12;transform:translateY(-1px)}.task-card[aria-pressed=true]{outline-color:#a8d2c0;background:#f5fbf7}button{border-radius:9px;background:var(--accent)}#artifact-review{border-top-color:#d3a044}#doorbell-flow{border-top-color:var(--accent)}progress{accent-color:var(--accent)}@media(max-width:800px){body{padding:14px}h1{font-size:18px}}
+</style>
 </html>

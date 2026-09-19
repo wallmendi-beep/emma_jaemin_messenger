@@ -57,10 +57,14 @@ class MessageStore:
                     workspace TEXT NOT NULL DEFAULT '',
                     hermes_session_id TEXT NOT NULL DEFAULT '',
                     jaemin_conversation_id TEXT NOT NULL DEFAULT '',
+                    execution_mode TEXT NOT NULL DEFAULT 'card_approval' CHECK(execution_mode IN ('project_auto','card_approval')),
                     archived INTEGER NOT NULL DEFAULT 0
                 )
                 """
             )
+            project_columns = {row["name"] for row in con.execute("PRAGMA table_info(projects)").fetchall()}
+            if "execution_mode" not in project_columns:
+                con.execute("ALTER TABLE projects ADD COLUMN execution_mode TEXT NOT NULL DEFAULT 'card_approval'")
             con.execute(
                 """
                 INSERT OR IGNORE INTO projects(
@@ -209,6 +213,15 @@ class MessageStore:
                 """
             ).fetchall()
         return [dict(row) for row in rows]
+
+    def set_execution_mode(self, project_id: int, execution_mode: str):
+        if execution_mode not in {'project_auto', 'card_approval'}:
+            raise ValueError('execution_mode must be project_auto or card_approval')
+        with self._connect() as con:
+            updated = con.execute('UPDATE projects SET execution_mode=? WHERE id=?', (execution_mode, int(project_id)))
+            if updated.rowcount != 1:
+                raise ValueError('project not found')
+        return self.get_project(project_id)
 
     def get_project(self, project_id: int):
         with self._connect() as con:
